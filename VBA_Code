@@ -1,0 +1,71 @@
+Attribute VB_Name = "Module1"
+Sub Wallstreet()
+
+'define variables
+Dim ws As Worksheet
+Dim ticker As String
+Dim volume As Double
+Dim year_open As Double
+Dim year_close As Double
+Dim yearly_change As Double
+Dim percent_change As Double
+Dim Data_Table As Integer
+
+'error issue correction to skip error on percent_change
+On Error Resume Next
+
+'loop every worksheet
+For Each ws In Worksheets
+    'create headers
+    ws.Cells(1, 9).Value = "Ticker"
+    ws.Cells(1, 10).Value = "Yearly Change"
+    ws.Cells(1, 11).Value = "Percent Change"
+    ws.Cells(1, 12).Value = "Total Stock Volume"
+
+'setup integers for loop
+    Data_Table = 2
+    Final_Row = ws.Range("A" & Rows.Count).End(xlUp).Row
+    
+    'loop
+        For i = 2 To Final_Row
+             If ws.Cells(i + 1, 1).Value <> ws.Cells(i, 1).Value Then
+            
+            'find all the values
+            ticker = ws.Cells(i, 1).Value
+            year_open = ws.Cells(i, 3).Value
+            year_close = ws.Cells(i, 6).Value
+            volume = ws.Cells(i, 7).Value
+            
+            yearly_change = year_close - year_open
+            percent_change = (year_close - year_open) / year_open
+    
+            'format values
+            ws.Columns("K").NumberFormat = "0.00%"
+
+            'insert values into table
+            ws.Cells(Data_Table, 9).Value = ticker
+            ws.Cells(Data_Table, 10).Value = yearly_change
+            ws.Cells(Data_Table, 11).Value = percent_change
+            ws.Cells(Data_Table, 12).Value = volume
+            Data_Table = Data_Table + 1
+            
+           End If
+        Next i
+    Next ws
+ 'loop every worksheet 2nd time
+For Each ws In Worksheets
+    Final_Row = ws.Range("A" & Rows.Count).End(xlUp).Row
+    'assign colors
+        For j = 2 To Final_Row
+           
+              If ws.Cells(j, 10) >= 0 Then
+                    ws.Cells(j, 10).Interior.ColorIndex = 4
+                ElseIf ws.Cells(j, 10) < 0 Then
+                    ws.Cells(j, 10).Interior.ColorIndex = 3
+                End If
+            
+          Next j
+    Next ws
+     
+End Sub
+
